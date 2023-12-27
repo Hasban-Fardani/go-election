@@ -6,7 +6,7 @@ import (
 
 func main() {
 	config := fiber.Config{
-		ViewsLayout: "./layouts",
+		ViewsLayout: "./web",
 	}
 
 	app := fiber.New(config)
