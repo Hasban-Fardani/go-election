@@ -1,5 +1,9 @@
 {
   "rewrites": [
     { "source": "(.*)", "destination": "api/index.go" }
-  ]
+  ],
+  "env": {
+    "TEMPLATE_DIR": "./public/layouts",
+    "TEMPLATE_EXT": ".html"
+  }
 }
