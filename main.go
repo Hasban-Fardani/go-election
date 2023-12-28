@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	engine := html.New("./layout", ".html")
+	engine := html.New("./public/layout", ".html")
 	config := fiber.Config{
 		Views:     engine,
 		AppName:   "go-election",
