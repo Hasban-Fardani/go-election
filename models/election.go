@@ -9,8 +9,7 @@ type Election struct {
 	NumberOfVotes uint   `json:"number_of_votes"`
 	IsActive      bool   `json:"is_active"`
 
-	Candidates []Candidate  `gorm:"foreignKey:ElectionId;references:Id"`
-	UserRights []UserRights `gorm:"foreignKey:ElectionId;references:Id"`
+	Candidates []Candidate `gorm:"foreignKey:ElectionId;references:Id"`
 }
 
 func (e *Election) TableName() string {

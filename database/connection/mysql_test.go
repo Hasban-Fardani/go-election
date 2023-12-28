@@ -13,7 +13,7 @@ func init() {
 }
 
 func TestConnectDB(t *testing.T) {
-	_, err := connectDB(cfg)
+	_, _, err := ConnectDB()
 	if err != nil {
 		t.Errorf("Failed to connect to database: %v\n", err)
 		return

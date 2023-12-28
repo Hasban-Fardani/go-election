@@ -6,6 +6,7 @@ import (
 	"go-election/models"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -18,8 +19,8 @@ func init() {
 
 // GenerateToken membuat token JWT dengan klaim khusus
 func GenerateToken(userId int, username string) (string, error) {
-	// Set waktu kadaluarsa token (misalnya, 1 jam dari sekarang)
-	expirationTime := time.Now().Add(time.Hour * 1).Unix()
+	// Set waktu kadaluarsa token
+	expirationTime := time.Now().Add(time.Duration(config.Data.JwtExpireMinute) * time.Minute).Unix()
 
 	// Membuat token dengan klaim khusus
 	claims := &models.UserClaims{
@@ -57,4 +58,33 @@ func VerifyToken(tokenString string) (*models.UserClaims, error) {
 	}
 
 	return nil, fmt.Errorf("invalid token")
+}
+
+func Save(c *fiber.Ctx, token string) {
+	cookie := new(fiber.Cookie)
+	cookie.Name = "token"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(time.Minute * time.Duration(config.Data.JwtExpireMinute))
+	cookie.HTTPOnly = true
+
+	c.Cookie(cookie)
+}
+
+func Delete(c *fiber.Ctx) {
+	c.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	})
+}
+
+func Get(c *fiber.Ctx) (token string) {
+	// token = c.Get("Authorization")
+	token = c.Cookies("token")
+	if _, err := VerifyToken(token); err != nil {
+		Delete(c)
+		token = ""
+	}
+	return
 }

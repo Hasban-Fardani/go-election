@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go Election</title>
+  <link rel="stylesheet" href="/public/style.css">
+</head>
+
+<body>
+  <header>
+    <nav class="text-white">
+      <h1>Go Election</h1>
+      {{ if not .LoggedIn }}
+      <button class="btn" onclick="openModal()">Login</button>
+      {{ else }}
+      <form action="/logout" method="post">
+        <input type="hidden" name="csrf" value="{{ .csrf }}"/>
+        <button type="submit" class="btn">Logout</button>
+      </form>
+      {{ end }}
+    </nav>
+
+    {{ if .Message }}
+    <p>{{ .Message }}</p>
+    {{ end }}
+
+    <div class="modal-overlay">
+      <div class="modal" id="loginModal">
+        <h2>Login to your account</h2>
+        <form action="/login" method="POST" class="login-form">
+          <input type="hidden" name="csrf" value="{{ .csrf }}">
+          <div class="form-group">
+            <label for="email">email</label>
+            <input type="text" id="email" name="email">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+          </div>
+          <button type="submit" class="btn-modal">Login</button>
+          <button type="button" class="btn-modal" onclick="closeModal()">Close</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {{ if .LoggedIn }}
+    <h1 class="text-center">Candidates</h1>
+    <div class="candidate-card-container">
+      {{ range .Candidates }}
+      <div class="candidate-card">
+        <img src="{{ .Image }}" alt="{{ .Vice }}" width="250" height="250" loading="lazy">
+        <div class="candidate-card-title">
+          <h2>{{ .Leader }}</h2>
+          <h2>{{ .Vice }}</h2>
+        </div>
+        <p class="candidate-card-desc">{{ .Description }}</p>
+        <div class="candidate-card-footer">
+          <button class="btn">Vote</button>
+          <button class="btn">Details</button>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+    {{ else }}
+    <p>You are not logged in</p>
+    {{ end }}
+  </main>
+
+  <footer class="text-center">
+    <p>made with ❤️ by <a href="https://github.com/hasban-fardani">Hasban Fardani</a></p>
+  </footer>
+  <script src="/public/main.js"></script>
+</body>
+
+</html>

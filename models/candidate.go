@@ -2,7 +2,9 @@ package models
 
 type Candidate struct {
 	Id          uint   `json:"id" gorm:"primary_key"`
-	Name        string `json:"name"`
+	Leader      string `json:"leader"`
+	Vice        string `json:"vice"`
+	Image       string `json:"image"`
 	Description string `json:"description"`
 	ElectionId  uint   `json:"election_id"`
 

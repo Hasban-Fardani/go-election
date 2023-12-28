@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS elections
   number_of_votes BIGINT UNSIGNED NOT NULL DEFAULT 0,
   is_active       BOOLEAN NOT NULL DEFAULT FALSE,
   start_time      TIMESTAMP NOT NULL,
-  end_time        TIMESTAMP NOT NULL
+  end_time        TIMESTAMP NOT NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

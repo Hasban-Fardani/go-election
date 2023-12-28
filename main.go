@@ -1,6 +1,7 @@
 package main
 
 import (
+	cfg "go-election/config"
 	"go-election/routes"
 
 	"github.com/gofiber/fiber/v2"
@@ -8,9 +9,11 @@ import (
 )
 
 func main() {
-	engine := html.New("./web", ".html")
+	engine := html.New("./layout", ".html")
 	config := fiber.Config{
-		Views: engine,
+		Views:     engine,
+		AppName:   "go-election",
+		Immutable: true,
 	}
 
 	app := fiber.New(config)
@@ -21,7 +24,7 @@ func main() {
 	// add routes
 	routes.AddRoutes(app)
 
-	if err := app.Listen(":3000"); err != nil {
+	if err := app.Listen(":" + cfg.Data.Port); err != nil {
 		panic(err)
 	}
 }
