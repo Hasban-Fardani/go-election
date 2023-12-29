@@ -4,8 +4,8 @@ type Election struct {
 	Id            uint   `json:"id" gorm:"primary_key"`
 	Name          string `json:"name"`
 	Description   string `json:"description"`
-	StartDate     string `json:"start_date"`
-	EndDate       string `json:"end_date"`
+	StartTime     string `json:"start_time"`
+	EndTime       string `json:"end_time"`
 	NumberOfVotes uint   `json:"number_of_votes"`
 	IsActive      bool   `json:"is_active"`
 

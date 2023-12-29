@@ -6,21 +6,21 @@ import (
 	"go-election/utils/jwt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
+type Data []map[string]any
+
 func Index(c *fiber.Ctx) error {
-	store := session.New()
-	sess, _ := store.Get(c)
-	message := sess.Get("message")
+	message := c.Locals("message")
 
 	csrfToken := c.Locals("token").(string)
-	token := jwt.Get(c)
+	token, _ := jwt.Get(c)
+
 	if token == "" {
 		return c.Render("index", fiber.Map{
 			"csrf":       csrfToken,
 			"LoggedIn":   false,
-			"Candidates": []models.Candidate{},
+			"UserRights": []models.UserRights{},
 			"Message":    message,
 		})
 	}
@@ -28,13 +28,19 @@ func Index(c *fiber.Ctx) error {
 	db, sqlDb, _ := connection.ConnectDB()
 	defer sqlDb.Close()
 
-	var candidates []models.Candidate
-	db.Preload("Election").Find(&candidates)
+	userId := jwt.GetUserId(c)
+
+	// get user rights
+	var userRights []models.UserRights
+	db.Where("user_id = ?", userId).
+		Preload("Election", "is_active = 1").
+		Order("election_id").
+		Find(&userRights)
 
 	return c.Render("index", fiber.Map{
 		"csrf":       csrfToken,
 		"LoggedIn":   true,
-		"Candidates": candidates,
+		"UserRights": userRights,
 		"Message":    message,
 	})
 }

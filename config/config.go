@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	Port            string
+	CookieSecret    string
 	JwtSecret       string
 	JwtExpireMinute int
 	DB              DBConfig
@@ -20,6 +21,7 @@ type DBConfig struct {
 	Username string
 	Password string
 	Database string
+	Debug    bool
 }
 
 var Data *Config
@@ -36,9 +38,11 @@ func LoadConfig() (*Config, error) {
 
 	return &Config{
 		Port:            getEnv("APP_PORT", "3000"),
+		CookieSecret:    getEnv("COOKIE_SECRET", "secret"),
 		JwtSecret:       getEnv("JWT_SECRET", "secret"),
 		JwtExpireMinute: minute,
 		DB: DBConfig{
+			Debug:    getEnv("DB_DEBUG", "false") == "true",
 			Host:     getEnv("DB_HOST", "127.0.0.1"),
 			Port:     getEnv("DB_PORT", "3306"),
 			Username: getEnv("DB_USERNAME", "root"),

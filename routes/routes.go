@@ -21,21 +21,24 @@ func AddRoutes(app *fiber.App) {
 		KeyGenerator:   utils.UUID,
 		ContextKey:     "token",
 	}))
-	app.Use(compress.New())
+
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
+	}))
+
 	app.Use(logger.New())
 
-	// app.Get("/performence", monitor.New())
+	app.Use(func(c *fiber.Ctx) error {
+		c.Locals("message", c.Query("message"))
+		return c.Next()
+	})
 
 	app.Get("/", controller.Index)
 	app.Post("/login", controller.Login)
 	app.Post("/logout", controller.Logout)
 
-	api := app.Group("/api")
-	api.Get("/login/cek", controller.APICheckLogin)
-	api.Post("/login", controller.APILogin)
-	api.Post("/logout", controller.APILogout)
+	app.Get("/election/:id", middleware.Auth(), controller.Election)
+	app.Post("/vote/:id", middleware.Auth(), controller.UserVote)
 
-	elections := api.Group("/elections", middleware.Auth())
-	elections.Get("/", controller.GetElections)
-	elections.Get("/:id", controller.GetElectionById)
+	app.Get("/dashboard", middleware.Auth(), controller.Dashboard)
 }

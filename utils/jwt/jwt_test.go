@@ -12,7 +12,7 @@ var (
 )
 
 func TestGenerateToken(t *testing.T) {
-	tokenStr, err = GenerateToken(1, "test")
+	tokenStr, err = GenerateToken(1, "test", "user")
 	if err != nil {
 		t.Errorf("Failed to generate token: %v\n", err)
 		return

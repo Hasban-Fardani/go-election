@@ -6,6 +6,7 @@ type User struct {
 	Id              int    `json:"id" gorm:"primary_key"`
 	Name            string `json:"name"`
 	Email           string `json:"email"`
+	Role            string `json:"role"`
 	Password        string `json:"-"`
 	RememberedToken string `json:"-"`
 
@@ -20,6 +21,7 @@ func (u *User) TableName() string {
 type UserClaims struct {
 	UserId   int    `json:"id"`
 	Username string `json:"username"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }
 

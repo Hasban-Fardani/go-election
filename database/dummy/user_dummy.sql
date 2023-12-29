@@ -1,3 +1,3 @@
-INSERT INTO users (name, email, password) VALUES
-('admin', 'admin@localhost', 'admin'),
-('user', 'user@localhost', 'user');
+INSERT INTO users (name, email, password, role) VALUES
+('admin', 'admin@localhost', 'admin', 'admin'),
+('user', 'user@localhost', 'user', 'user');

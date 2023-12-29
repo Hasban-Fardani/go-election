@@ -6,10 +6,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Auth() func(c *fiber.Ctx) error {
+func Admin() func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		token, _ := jwt.Get(c)
-		if token == "" {
+		token, claims := jwt.Get(c)
+		if token == "" || claims.Role != "admin" {
 			return c.Status(fiber.StatusUnauthorized).Redirect("/?message=unauthorized", fiber.StatusFound)
 		}
 		return c.Next()

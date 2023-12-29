@@ -32,5 +32,9 @@ func ConnectDB() (db *gorm.DB, sqlDB *sql.DB, err error) {
 	sqlDB.SetMaxOpenConns(30)
 	sqlDB.SetConnMaxIdleTime(time.Minute * 5)
 
+	if config.Debug {
+		db = db.Debug()
+	}
+
 	return
 }
