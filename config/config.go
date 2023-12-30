@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -32,7 +34,13 @@ func init() {
 }
 
 func LoadConfig() (*Config, error) {
-	err := godotenv.Load(".env")
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dir)
+
+	err = godotenv.Load(".env")
 
 	minute, _ := strconv.Atoi(getEnv("JWT_EXPIRE_MINUTE", "10"))
 

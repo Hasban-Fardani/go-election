@@ -1,7 +1,55 @@
 package controller
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fmt"
+	"go-election/database/connection"
+	"go-election/models"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func Dashboard(c *fiber.Ctx) error {
-	return c.Render("dashboard", fiber.Map{})
+	db, sql, _ := connection.ConnectDB()
+	defer sql.Close()
+
+	var allElections []models.Election
+	db.Select("id, name").Order("id DESC").Find(&allElections)
+
+	var election models.Election
+
+	electionId := c.Query("election")
+	if electionId != "" {
+		db.Preload("Candidates").Where("id = ?", electionId).Find(&election)
+	} else {
+		db.Preload("Candidates").Where("is_active = ?", true).Order("id DESC").Find(&election)
+	}
+
+	var votes []models.Vote
+	db.Preload("Candidate").Where("election_id = ?", election.Id).Find(&votes)
+
+	if len(votes) == 0 {
+		return c.Render("dashboard", fiber.Map{
+			"AllElections": allElections,
+			"Election":     election,
+			"Message":      "No votes yet",
+			"DataVote":     nil,
+			"csrf":         c.Locals("token"),
+		})
+	}
+
+	dataVote := map[string]uint{}
+
+	for _, vote := range votes {
+		dataVote[vote.Candidate.Leader] = dataVote[vote.Candidate.Leader] + 1
+	}
+
+	fmt.Println(election.Id, election.Name, votes[0].ElectionId)
+
+	return c.Render("dashboard", fiber.Map{
+		"AllElections": allElections,
+		"Election":     election,
+		"Message":      c.Locals("message"),
+		"DataVote":     dataVote,
+		"csrf":         c.Locals("token"),
+	})
 }

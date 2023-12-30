@@ -40,5 +40,5 @@ func AddRoutes(app *fiber.App) {
 	app.Get("/election/:id", middleware.Auth(), controller.Election)
 	app.Post("/vote/:id", middleware.Auth(), controller.UserVote)
 
-	app.Get("/dashboard", middleware.Auth(), controller.Dashboard)
+	app.Get("/dashboard", middleware.Auth(), middleware.Admin(), controller.Dashboard)
 }

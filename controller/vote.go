@@ -13,11 +13,10 @@ func UserVote(c *fiber.Ctx) (err error) {
 	db, sqlDb, _ := connection.ConnectDB()
 	defer sqlDb.Close()
 
-	// find candidate frpm param
+	// find candidate from param
 	candidateId := c.Params("id")
 	var candidate models.Candidate
-	err = db.Debug().
-		Where("id = ?", candidateId).
+	err = db.Where("id = ?", candidateId).
 		Preload("Election").
 		Find(&candidate).
 		Error
@@ -69,6 +68,7 @@ func UserVote(c *fiber.Ctx) (err error) {
 	err = db.Create(&models.Vote{
 		CandidateId:  candidate.Id,
 		UserRightsId: userRights.Id,
+		ElectionId:   election.Id,
 	}).Error
 
 	db.Model(&userRights).Update("is_used", true)

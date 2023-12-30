@@ -4,6 +4,7 @@ import (
 	"go-election/database/connection"
 	"go-election/models"
 	"go-election/utils/jwt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -51,6 +52,16 @@ func Login(c *fiber.Ctx) error {
 }
 
 func Logout(c *fiber.Ctx) error {
+	// Set header Cache-Control
+	c.Set("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate")
+
+	// Set header Pragma
+	c.Set("Pragma", "no-cache")
+
+	// Set header Expires
+	expirationTime := time.Date(1990, 1, 2, 0, 0, 0, 0, time.UTC)
+	c.Set("Expires", expirationTime.Format(time.RFC1123))
+
 	jwt.Delete(c)
 	c.Method("GET")
 	return c.Redirect("/?message=logout success", fiber.StatusFound)

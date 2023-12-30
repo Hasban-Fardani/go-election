@@ -1,18 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Golang Election">
+  <meta name="author" content="Hasban Fardani">
   <title>Dashboard</title>
   <link rel="stylesheet" href="/public/style.css">
   <link rel="stylesheet" href="/public/admin.css">
 </head>
+
 <body>
+  {{ if .Message }}
+  <div class="alert" id="autoCloseAlert">
+    <p>{{ .Message }}</p>
+  </div>
+  <script>document.addEventListener("DOMContentLoaded", function () { var e = document.getElementById("autoCloseAlert"); e.classList.add("show-alert"), setTimeout(function () { e.style.display = "none" }, 2e3) })</script>
+  {{ end }}
+  <header>
+    <h1>Dashboard</h1>
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf" value="{{ .csrf }}">
+      <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+  </header>
+  <main>
+    <div class="card disabled">
+      <div class="card-header">
+        <h2>{{ .Election.Name }}</h2>
+        <div>
+          <button onclick="toggleDropdown()" class="dropbtn">Eletions</button>
+          <div id="myDropdown" class="dropdown-content">
+            {{ range .AllElections }}
+            <a href="/dashboard?election={{.Id}}">{{.Name}}</a>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+      <canvas id="chart" width="300" height="300"></canvas>
+    </div>
+  </main>
   <nav>
-    <a href="/dashboard" class="btn" style="z-index: 10;">Dashboard</a>
-    <a href="/elections" class="btn">Elections</a>
-    <a href="/users" class="btn">Users</a>
+    <a href="/dashboard" class="active">Dashboard</a>
+    <a href="/elections">Elections</a>
+    <a href="/users">Users</a>
   </nav>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const ctx = document.getElementById('chart');
+    let datavote = {{ .DataVote }}
+    let keys = Object.keys(datavote)
+    let values = Object.values(datavote)
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: keys,
+        datasets: [{
+          label: '# of Votes',
+          data: values,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+
+    function toggleDropdown() {
+      var dropdown = document.getElementById("myDropdown");
+      dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function (event) {
+      if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.style.display === "block") {
+            openDropdown.style.display = "none";
+          }
+        }
+      }
+    }
+  </script>
 </body>
+
 </html>

@@ -19,7 +19,9 @@ func main() {
 	app := fiber.New(config)
 
 	// serve ./public as static
-	app.Static("/public", "./public")
+	app.Static("/public", "./public", fiber.Static{
+		Compress: true,
+	})
 
 	// add routes
 	routes.AddRoutes(app)
