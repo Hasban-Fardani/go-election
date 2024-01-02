@@ -13,15 +13,19 @@ func Dashboard(c *fiber.Ctx) error {
 	defer sql.Close()
 
 	var allElections []models.Election
-	db.Select("id, name").Order("id DESC").Find(&allElections)
+	db.Select("id, name").
+		Where("is_active = ?", true).
+		Limit(3).
+		Order("id").
+		Find(&allElections)
 
 	var election models.Election
 
 	electionId := c.Query("election")
 	if electionId != "" {
-		db.Preload("Candidates").Where("id = ?", electionId).Find(&election)
+		db.Preload("Candidates").Where("id = ?", electionId).First(&election)
 	} else {
-		db.Preload("Candidates").Where("is_active = ?", true).Order("id DESC").Find(&election)
+		db.Preload("Candidates").Where("is_active = ?", true).Order("id DESC").First(&election)
 	}
 
 	var votes []models.Vote

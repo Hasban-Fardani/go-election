@@ -8,8 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type Data []map[string]any
-
 func Index(c *fiber.Ctx) error {
 	message := c.Locals("message")
 

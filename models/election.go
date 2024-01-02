@@ -11,7 +11,3 @@ type Election struct {
 
 	Candidates []Candidate `gorm:"foreignKey:ElectionId;references:Id"`
 }
-
-func (e *Election) TableName() string {
-	return "elections"
-}

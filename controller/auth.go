@@ -9,14 +9,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Initialize the database connection
+
 func Login(c *fiber.Ctx) error {
-	db, sqlDb, _ := connection.ConnectDB()
-	defer sqlDb.Close()
+	var db, conn, _ = connection.ConnectDB()
+	defer conn.Close()
 
 	// cek remembered token from cookie
 	lastToken, _ := jwt.Get(c)
 	if lastToken != "" {
-		c.Redirect("/?message=Already logged in", fiber.StatusFound)
+		return c.Redirect("/?message=Already logged in", fiber.StatusFound)
 	}
 
 	// overide method before redirect
@@ -33,16 +35,13 @@ func Login(c *fiber.Ctx) error {
 		Error
 
 	// cek password and error
-	if err != nil || request.Password != user.Password {
+	if err != nil || !comparePasswords(request.Password, user.Password) {
 		return c.Redirect("/?message=invalid credentials", fiber.StatusFound)
 	}
 
 	token, _ := jwt.GenerateToken(user.Id, user.Name, user.Role)
 
 	jwt.Save(c, token, user.Id)
-
-	user.RememberedToken = token
-	db.Save(&user)
 
 	if user.Role == "admin" {
 		return c.Redirect("/dashboard?message=login success", fiber.StatusFound)
@@ -65,4 +64,11 @@ func Logout(c *fiber.Ctx) error {
 	jwt.Delete(c)
 	c.Method("GET")
 	return c.Redirect("/?message=logout success", fiber.StatusFound)
+}
+
+// Helper function to compare hashed passwords
+func comparePasswords(password string, hashedPassword string) bool {
+	// Implement your password comparison logic here
+	// Example: return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
+	return password == hashedPassword
 }
